@@ -1,4 +1,6 @@
 ﻿
+using Domain.Exceptions;
+
 namespace Domain.Entities
 {
     public class Reserva : Entity

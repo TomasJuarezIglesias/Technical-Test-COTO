@@ -6,6 +6,6 @@ namespace Application.Interfaces
     public interface IReservaService
     {
         Task<ApiResponse<IEnumerable<ReservaDto>>> GetByDate(DateTime fecha);
-        Task<ReservaDto> Create(ReservaCreateDto reserva);
+        Task<ApiResponse<ReservaDto>> Create(ReservaCreateDto reserva);
     }
 }

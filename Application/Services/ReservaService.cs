@@ -1,7 +1,9 @@
-﻿using Application.Dtos;
+﻿using Application.Constants;
+using Application.Dtos;
 using Application.Interfaces;
 using AutoMapper;
 using Domain.Entities;
+using Domain.Exceptions;
 using Domain.IRepository;
 
 namespace Application.Services
@@ -22,9 +24,42 @@ namespace Application.Services
             return ApiResponse<IEnumerable<ReservaDto>>.SuccessResponse(reservasMapped);
         }
 
-        public async Task<ReservaDto> Create(ReservaCreateDto reserva)
+        public async Task<ApiResponse<ReservaDto>> Create(ReservaCreateDto reservaDto)
         {
-            throw new NotImplementedException();
+            var salon = await salonRepository.FindAsync(s => s.Id == reservaDto.SalonId);
+            if (salon == null) throw new BusinessException("Salón no existe");
+
+            var cliente = await clienteRepository.FindAsync(c => c.Id == reservaDto.ClienteId);
+            if (cliente == null) throw new BusinessException("Cliente no existe");
+
+            var reservasExistentes = await reservaRepository
+                .FindAsync(r => r.SalonId == reservaDto.SalonId && r.Fecha == reservaDto.Fecha.Date);
+
+            if (reservaDto.HoraInicio >= reservaDto.HoraFin) throw new BusinessException("Hora fin debe ser mayor a hora inicio");
+
+            if (reservasExistentes.Any(r => IsOverlapping(reservaDto, r)))
+                throw new BusinessException("Conflicto de horario");
+
+            var reservaEntity = mapper.Map<Reserva>(reservaDto);
+            var response = await reservaRepository.AddAsync(reservaEntity);
+            var reservaMapped = mapper.Map<ReservaDto>(response);
+
+            return ApiResponse<ReservaDto>.SuccessResponse(reservaMapped);
+        }
+
+        private bool IsOverlapping(ReservaCreateDto nueva, Reserva existente)
+        {
+            var buffer = HorarioConstants.MargenEntreReservas;
+
+            var newStart = nueva.HoraInicio;
+            var newEnd = nueva.HoraFin;
+
+            var exStart = existente.HoraInicio;
+            var exEnd = existente.HoraFin;
+
+            bool noConflict = exEnd + buffer <= newStart || newEnd + buffer <= exStart;
+
+            return !noConflict;
         }
 
     }

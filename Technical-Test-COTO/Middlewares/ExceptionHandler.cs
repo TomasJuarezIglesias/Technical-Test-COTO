@@ -1,4 +1,5 @@
-﻿using Domain.Exceptions;
+﻿using Domain.Entities;
+using Domain.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using System.Net;
 
@@ -14,12 +15,7 @@ public sealed class ExceptionHandler(ILogger<ExceptionHandler> logger) : IExcept
             _logger.LogError($"Business Error({businessEx.StatusCode}): {businessEx.Message}");
 
             context.Response.StatusCode = (int)businessEx.StatusCode;
-            await context.Response.WriteAsJsonAsync(new 
-            {
-                businessEx.Message,
-                TraceId = context.TraceIdentifier
-            }, cancellationToken: cancellationToken);
-
+            await context.Response.WriteAsJsonAsync(ApiResponse<object>.ErrorResponse(businessEx.Message), cancellationToken: cancellationToken);
             return true;
         }
 
