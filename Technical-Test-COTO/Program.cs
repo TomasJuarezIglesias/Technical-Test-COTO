@@ -1,5 +1,7 @@
+using Application.Mappers;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using Technical_Test_COTO.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,11 +20,21 @@ if (string.IsNullOrWhiteSpace(connectionString))
 
 builder.Services.AddDbContext<AppDbContext>(opt => opt.UseSqlServer(connectionString));
 
+// Automapper
+var mapperAssembly = typeof(MapperProfile).Assembly;
+builder.Services.AddAutoMapper(cfg => {}, mapperAssembly);
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddExceptionHandler<ExceptionHandler>();
+builder.Services.AddProblemDetails();
+
 var app = builder.Build();
+
+// Middlewares
+app.UseExceptionHandler();
 
 if (app.Environment.IsDevelopment())
 {

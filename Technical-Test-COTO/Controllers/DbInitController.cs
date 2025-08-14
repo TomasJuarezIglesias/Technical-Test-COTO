@@ -11,16 +11,8 @@ namespace Technical_Test_COTO.Controllers
         [HttpPost]
         public async Task<IActionResult> InitializeDatabase()
         {
-            try
-            {
-                await AppDbInitializer.MigrateAndSeedAsync(_dbContext, _logger);
-                return Ok(new { Message = "Base de datos inicializada" });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error en inicialización de DB");
-                return StatusCode(500, new { Error = "No se pudo inicializar la DB. Contacte al administrador" });
-            }
+            await AppDbInitializer.MigrateAndSeedAsync(_dbContext, _logger);
+            return Ok(new { Message = "Base de datos inicializada" });
         }
     }
 }
