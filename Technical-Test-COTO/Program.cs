@@ -1,3 +1,4 @@
+using Application.Interfaces;
 using Application.Mappers;
 using Application.Services;
 using Domain.IRepository;
@@ -27,11 +28,10 @@ builder.Services.AddDbContext<AppDbContext>(opt => opt.UseSqlServer(connectionSt
 var mapperAssembly = typeof(MapperProfile).Assembly;
 builder.Services.AddAutoMapper(cfg => { }, mapperAssembly);
 
-// Repositories
+// Inyecciones
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-
-// Services
-builder.Services.AddScoped<ReservaService>();
+builder.Services.AddScoped(typeof(IAppDbInitializer), typeof(AppDbInitializer));
+builder.Services.AddScoped(typeof(IReservaService), typeof(ReservaService));
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

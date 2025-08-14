@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Domain.IRepository;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,14 +7,14 @@ namespace Technical_Test_COTO.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class DbInitializerController(AppDbContext _dbContext, ILogger<DbInitializerController> _logger) : ControllerBase
+    public class DbInitializerController(IAppDbInitializer _appDbInitializer) : ControllerBase
     {
         [HttpPost]
         public async Task<IActionResult> InitializeDatabase()
         {
-            await AppDbInitializer.MigrateAndSeedAsync(_dbContext, _logger);
+            await _appDbInitializer.MigrateAndSeedAsync();
 
-            var response = new ApiResponse<object>( success: true, data: null, message: "Base de datos inicializada correctamente");
+            var response = ApiResponse<object>.SuccessResponse(null, "Base de datos inicializada correctamente");
             return Ok(response);
         }
     }

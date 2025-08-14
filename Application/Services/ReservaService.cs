@@ -1,4 +1,5 @@
 ﻿using Application.Dtos;
+using Application.Interfaces;
 using AutoMapper;
 using Domain.Entities;
 using Domain.IRepository;
@@ -9,7 +10,7 @@ namespace Application.Services
         IRepository<Reserva> reservaRepository,
         IRepository<Salon> salonRepository,
         IRepository<Cliente> clienteRepository,
-        IMapper mapper)
+        IMapper mapper) : IReservaService
     {
 
         public async Task<ApiResponse<IEnumerable<ReservaDto>>> GetByDate(DateTime fecha)
@@ -18,10 +19,10 @@ namespace Application.Services
 
             var reservasMapped = mapper.Map<IEnumerable<ReservaDto>>(reservas);
 
-            return new ApiResponse<IEnumerable<ReservaDto>>(success: true, data: reservasMapped);
+            return ApiResponse<IEnumerable<ReservaDto>>.SuccessResponse(reservasMapped);
         }
 
-        public async Task<ReservaDto> Save(ReservaSaveDto reserva)
+        public async Task<ReservaDto> Create(ReservaCreateDto reserva)
         {
             throw new NotImplementedException();
         }

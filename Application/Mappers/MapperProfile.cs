@@ -8,7 +8,7 @@ namespace Application.Mappers
     {
         public MapperProfile()
         {
-            CreateMap<ReservaSaveDto, Reserva>()
+            CreateMap<ReservaCreateDto, Reserva>()
                 .ForMember(dest => dest.Salon, opt => opt.Ignore())
                 .ForMember(dest => dest.Cliente, opt => opt.Ignore());
 
