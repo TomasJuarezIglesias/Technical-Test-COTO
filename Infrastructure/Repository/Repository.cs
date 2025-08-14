@@ -27,6 +27,18 @@ namespace Infrastructure.Repository
             => await _entities.AnyAsync(predicate);
 
         public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
-            => await _entities.Where(predicate).ToListAsync();
+            => await _entities.Where(predicate).AsNoTracking().ToListAsync();
+
+        public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includes)
+        {
+            IQueryable<T> query = _context.Set<T>();
+
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+
+            return await query.Where(predicate).AsNoTracking().ToListAsync();
+        }
     }
 }

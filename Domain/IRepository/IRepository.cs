@@ -8,5 +8,6 @@ namespace Domain.IRepository
         Task<T> AddAsync(T entity);
         Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate);
         Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate);
+        Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includes);
     }
 }

@@ -17,7 +17,7 @@ namespace Application.Services
 
         public async Task<ApiResponse<IEnumerable<ReservaDto>>> GetByDate(DateTime fecha)
         {
-            var reservas = await reservaRepository.FindAsync(r => r.Fecha.Date == fecha.Date);
+            var reservas = await reservaRepository.FindAsync(r => r.Fecha.Date == fecha.Date, r => r.Cliente, r => r.Salon);
 
             var reservasMapped = mapper.Map<IEnumerable<ReservaDto>>(reservas);
 
@@ -28,16 +28,11 @@ namespace Application.Services
         {
             if (reservaDto.HoraInicio >= reservaDto.HoraFin) throw new BusinessException("Hora fin debe ser mayor a hora inicio");
 
-            var existsSalonTask = salonRepository.ExistsAsync(s => s.Id == reservaDto.SalonId);
-            var existsClienteTask = clienteRepository.ExistsAsync(c => c.Id == reservaDto.ClienteId);
+            var existsSalon = await salonRepository.ExistsAsync(s => s.Id == reservaDto.SalonId);
+            if (!existsSalon) throw new BusinessException("Salón no existe");
 
-            await Task.WhenAll(existsSalonTask, existsClienteTask);
-
-            if (!existsSalonTask.Result)
-                throw new BusinessException("Salón no existe");
-
-            if (!existsClienteTask.Result)
-                throw new BusinessException("Cliente no existe");
+            var existsCliente = await clienteRepository.ExistsAsync(c => c.Id == reservaDto.ClienteId);
+            if (!existsCliente) throw new BusinessException("Cliente no existe");
 
             var reservasExistentes = await reservaRepository
                 .FindAsync(r => r.SalonId == reservaDto.SalonId && r.Fecha == reservaDto.Fecha.Date);
