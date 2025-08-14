@@ -26,11 +26,11 @@ namespace Application.Services
 
         public async Task<ApiResponse<ReservaDto>> Create(ReservaCreateDto reservaDto)
         {
-            var salon = await salonRepository.FindAsync(s => s.Id == reservaDto.SalonId);
-            if (salon == null) throw new BusinessException("Salón no existe");
+            var existsSalon = await salonRepository.ExistsAsync(s => s.Id == reservaDto.SalonId);
+            if (!existsSalon) throw new BusinessException("Salón no existe");
 
-            var cliente = await clienteRepository.FindAsync(c => c.Id == reservaDto.ClienteId);
-            if (cliente == null) throw new BusinessException("Cliente no existe");
+            var existsCliente = await clienteRepository.ExistsAsync(c => c.Id == reservaDto.ClienteId);
+            if (!existsCliente) throw new BusinessException("Cliente no existe");
 
             var reservasExistentes = await reservaRepository
                 .FindAsync(r => r.SalonId == reservaDto.SalonId && r.Fecha == reservaDto.Fecha.Date);
