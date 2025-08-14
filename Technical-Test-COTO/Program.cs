@@ -4,7 +4,9 @@ using Application.Services;
 using Domain.IRepository;
 using Infrastructure.Data;
 using Infrastructure.Repository;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Technical_Test_COTO.Conventions;
 using Technical_Test_COTO.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -33,6 +35,24 @@ builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped(typeof(IAppDbInitializer), typeof(AppDbInitializer));
 builder.Services.AddScoped(typeof(IReservaService), typeof(ReservaService));
 
+// CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularDevClient", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:4200")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
+
+builder.Services.Configure<MvcOptions>(options =>
+{
+    options.Conventions.Insert(0, new GlobalRoutePrefixConvention("api"));
+});
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -52,6 +72,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowAngularDevClient");
 
 app.UseAuthorization();
 
