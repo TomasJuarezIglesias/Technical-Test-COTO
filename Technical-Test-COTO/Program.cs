@@ -1,5 +1,9 @@
 using Application.Mappers;
+using Application.Services;
+using Domain.Entities;
+using Domain.IRepository;
 using Infrastructure.Data;
+using Infrastructure.Repository;
 using Microsoft.EntityFrameworkCore;
 using Technical_Test_COTO.Middlewares;
 
@@ -22,7 +26,13 @@ builder.Services.AddDbContext<AppDbContext>(opt => opt.UseSqlServer(connectionSt
 
 // Automapper
 var mapperAssembly = typeof(MapperProfile).Assembly;
-builder.Services.AddAutoMapper(cfg => {}, mapperAssembly);
+builder.Services.AddAutoMapper(cfg => { }, mapperAssembly);
+
+// Repositories
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+
+// Services
+builder.Services.AddScoped<ReservaService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

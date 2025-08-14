@@ -1,9 +1,8 @@
 ﻿
 namespace Domain.Entities
 {
-    public class Salon
+    public class Salon : Entity
     {
-        public int Id { get; set; }
         public string Nombre { get; set; }
         public string Ubicacion { get; set; }
         public int Capacidad { get; set; }
