@@ -16,6 +16,9 @@ namespace Infrastructure.Repository
         protected readonly AppDbContext _context = dbContext;
         protected readonly DbSet<T> _entities = dbContext.Set<T>();
 
+        public async Task<IEnumerable<T>> GetAllAsync()
+            => await _entities.AsNoTracking().ToListAsync();
+
         public async Task<T> AddAsync(T entity)
         {
             await _entities.AddAsync(entity);
@@ -40,5 +43,6 @@ namespace Infrastructure.Repository
 
             return await query.Where(predicate).AsNoTracking().ToListAsync();
         }
+
     }
 }

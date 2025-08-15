@@ -1,4 +1,5 @@
 using Application.Interfaces;
+using Application.IServices;
 using Application.Mappers;
 using Application.Services;
 using Domain.IRepository;
@@ -34,6 +35,8 @@ builder.Services.AddAutoMapper(cfg => { }, mapperAssembly);
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped(typeof(IAppDbInitializer), typeof(AppDbInitializer));
 builder.Services.AddScoped(typeof(IReservaService), typeof(ReservaService));
+builder.Services.AddScoped(typeof(IClienteService), typeof(ClienteService));
+builder.Services.AddScoped(typeof(ISalonService), typeof(SalonService));
 
 // CORS
 builder.Services.AddCors(options =>
